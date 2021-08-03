@@ -33,7 +33,7 @@
 (unless (probe-file *src*)
   (run-program
    "/usr/bin/wget"
-   `("--convert-links" "--page-requisites" ,*src*)
+   `("--span-hosts" "--convert-links" "--page-requisites" ,*src*)
    :output *standard-output*))
 
 (with-open-file (*standard-output*
