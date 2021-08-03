@@ -1,0 +1,11 @@
+(uiop:define-package
+    :wolfree
+    (:mix
+     :cl
+     :parenscript
+     :cl-who
+     :cl-css
+     :cl-interpol
+     :named-readtables
+     :hunchentoot
+     :sb-ext))
