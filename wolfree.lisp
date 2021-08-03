@@ -33,7 +33,7 @@
 (unless (probe-file *src*)
   (run-program
    "/usr/bin/wget"
-   `("--span-hosts" "--convert-links" "--page-requisites" ,*src*)
+   `("--convert-links" "--page-requisites" ,*src*)
    :output *standard-output*))
 
 (with-open-file (*standard-output*
@@ -124,9 +124,8 @@
                                       :border "thin solid darkorange")))
                            :onchange (ps-inline
                                          (chain
-                                          document
-                                          (query-selector :form)
-                                          (onsubmit
+                                          parent
+                                          (submit
                                            (chain
                                             this
                                             value
@@ -274,7 +273,15 @@
              (then (lambda (response) (chain response (json))))
              (then (lambda (json) (parse json)))))
           (set-interval
-           (lambda () (setf (@ ($ :form) onsubmit) submit))
+           (lambda ()
+             (setf (@ ($ :form) onsubmit) submit)
+             (setf
+              (@ ($ :img) onclick)
+              (lambda ()
+                (chain
+                 parent
+                 location
+                 (replace "https://github.com/WolfreeAlpha")))))
            999)
           (wait-until-exist
            "._2oVR5 ._2cS1C"
