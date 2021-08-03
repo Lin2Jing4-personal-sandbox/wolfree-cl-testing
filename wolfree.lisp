@@ -122,14 +122,23 @@
                                       :background "white"
                                       :border-radius "4px"
                                       :border "thin solid darkorange")))
-                           :onchange (ps-inline
-                                         (chain
-                                          parent
-                                          (submit
-                                           (chain
-                                            this
-                                            value
-                                            (replace-all #\Space :+)))))
+                           :onchange (lisp
+                                      (ps
+                                        (chain
+                                         parent
+                                         (submit
+                                          (chain
+                                           this
+                                           value
+                                           (replace-all #\Space :+))))
+                                        (chain
+                                         this
+                                         previous-element-sibling
+                                         class-list
+                                         (add
+                                          "_3L0WC"
+                                          "_1GgzZ"
+                                          "_3f1Mz"))))
                            (:option (@ state value))
                            (chain
                             state
@@ -160,16 +169,6 @@
              (new (chain (*date) (get-day)))
              ".herokuapp.com/")))
           (defun submit (podstate)
-            (chain
-             iframe
-             content-document
-             (query-selector-all :header)
-             (for-each
-              (lambda (header)
-                (chain
-                 header
-                 class-list
-                 (add "_3L0WC" "_1GgzZ" "_3f1Mz")))))
             (setf
              appid
              '("26LQEH-YT3P6T3YY9"
