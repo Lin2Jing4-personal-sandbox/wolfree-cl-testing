@@ -16,9 +16,19 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 "
 
-(in-package :wolfree)
+(uiop:define-package
+    wolfree
+    (:mix
+     parenscript
+     hunchentoot
+     cl-interpol
+     cl-wget
+     cl-css
+     cl-who))
 
-(in-readtable :interpol-syntax)
+(in-package wolfree)
+
+(named-readtables:in-readtable :interpol-syntax)
 
 (eval-when (:compile-toplevel
             :load-toplevel
@@ -27,17 +37,20 @@
   (setq *js-inline-string-delimiter* #\')
   (setf (html-mode) :html5))
 
-(defparameter *src*
-  "www.wolframalpha.com/input/index.html")
+(unless (probe-file "https://www.wolframalpha.com/input/index.html")
+  (wget
+   '("https://www.wolframalpha.com/input/index.html")
+   :--page-requisites t))
 
-(unless (probe-file *src*)
-  (run-program
-   "/usr/bin/wget"
-   `("--convert-links" "--page-requisites" ,*src*)
-   :output *standard-output*))
+(ignore-errors
+ (start
+  (make-instance
+   'easy-acceptor
+   :port 8080
+   :document-root "https://www.wolframalpha.com/")))
 
 (with-open-file (*standard-output*
-                 "index.html"
+                 "https://www.wolframalpha.com/index.html"
                  :direction :output
                  :if-exists :supersede)
   (with-html-output (*standard-output*
@@ -60,7 +73,7 @@
      (:body
       (:iframe
        :id "iframe"
-       :src *src*
+       :src "input/index.html"
        :style (inline-css
                '(:height "100%"
                  :width "100%"
@@ -135,10 +148,7 @@
                                          this
                                          previous-element-sibling
                                          class-list
-                                         (add
-                                          "_3L0WC"
-                                          "_1GgzZ"
-                                          "_3f1Mz"))))
+                                         (add "_21h4q" "_1GgzZ" "_3f1Mz"))))
                            (:option (@ state value))
                            (chain
                             state
@@ -194,56 +204,6 @@
                "8EL8GA-7W6EVYTQ5X"
                "W4TUXQ-GA2H8KUULA"
                "UGHH75-YPX2RVU4E4"))
-            (defmacro add-spaces (string)
-              `(,@string
-                ,@(loop
-                    for str
-                    in '("Power"
-                         "Sqrt"
-                         "Cbrt"
-                         "Surd"
-                         "Exp"
-                         "Log"
-                         "Log10"
-                         "Abs"
-                         "D"
-                         "Partial"
-                         "Integrate"
-                         "Sum"
-                         "Product"
-                         "Limit"
-                         "UnitStep"
-                         "DiracDelta"
-                         "Piecewise"
-                         "LaplaceTransform"
-                         "InverseLaplaceTransform"
-                         "FourierTransform"
-                         "InverseFourierTransform"
-                         "rad"
-                         "Sin"
-                         "Cos"
-                         "Tan"
-                         "Sec"
-                         "Csc"
-                         "Cot"
-                         "ArcSin"
-                         "ArcCos"
-                         "ArcTan"
-                         "Sinh"
-                         "Cosh"
-                         "Tanh"
-                         "Sech"
-                         "Csch"
-                         "Coth"
-                         "ArcSinh"
-                         "ArcCosh"
-                         "ArcTanh"
-                         "ArcSech"
-                         "ArcCsch"
-                         "ArcCoth")
-                    collect `(replace
-                              (regex ,#?(([^%][^%])($(str)%5B)))
-                              "$1 $2"))))
             (chain
              (fetch
               (+
@@ -261,34 +221,83 @@
                :&reinterpret= true
                :&podstate= podstate
                :&appid= (@ appid (rem (new *date) (@ appid length)))
-               :&input= (add-spaces
-                         (chain
-                          iframe
-                          content-window
-                          location
-                          search
-                          (replace (regex ".*i=") "")
-                          (replace-all "%E2%85%87" :e)))))
+               :&input= (chain
+                         '("Power"
+                           "Sqrt"
+                           "Cbrt"
+                           "Surd"
+                           "Exp"
+                           "Log"
+                           "Log10"
+                           "Abs"
+                           "D"
+                           "Partial"
+                           "Integrate"
+                           "Sum"
+                           "Product"
+                           "Limit"
+                           "UnitStep"
+                           "DiracDelta"
+                           "Piecewise"
+                           "LaplaceTransform"
+                           "InverseLaplaceTransform"
+                           "FourierTransform"
+                           "InverseFourierTransform"
+                           "Sin"
+                           "Cos"
+                           "Tan"
+                           "Sec"
+                           "Csc"
+                           "Cot"
+                           "ArcSin"
+                           "ArcCos"
+                           "ArcTan"
+                           "Sinh"
+                           "Cosh"
+                           "Tanh"
+                           "Sech"
+                           "Csch"
+                           "Coth"
+                           "ArcSinh"
+                           "ArcCosh"
+                           "ArcTanh"
+                           "ArcSech"
+                           "ArcCsch"
+                           "ArcCoth")
+                         (reduce
+                          (lambda (input built-in-symbol)
+                            (chain
+                             input
+                             (replace-all
+                              (+ built-in-symbol "%5B")
+                              (+ #\Space built-in-symbol "%5B"))))
+                          (chain
+                           iframe
+                           content-window
+                           location
+                           search
+                           (replace (regex ".*i=") "")
+                           (replace-all "%E2%85%87" :e))))))
              (then (lambda (response) (chain response (json))))
              (then (lambda (json) (parse json)))))
           (set-interval
            (lambda ()
              (setf (@ ($ :form) onsubmit) submit)
              (setf
-              (@ ($ :img) onclick)
-              (lambda ()
-                (chain
-                 parent
-                 location
-                 (replace "https://github.com/WolfreeAlpha")))))
+              (inner-html ($ :button))
+              (who-ps-html
+               (:button
+                :onclick (ps-inline
+                             (chain
+                              parent
+                              location
+                              (replace "https://github.com/WolfreeAlpha")))
+                :class "_10um4 VC3Co _34x1u"
+                "Source")
+               "Get FREE access to Wolfram|Alpha PRO."
+               (:br)
+               "Unlock step-by-step solution for everyone.")))
            999)
           (wait-until-exist
            "._2oVR5 ._2cS1C"
            (chain ($ "._2oVR5 ._2cS1C") (remove))))))))))
-
-(ignore-errors
- (start
-  (make-instance
-   'easy-acceptor
-   :port 8080
-   :document-root (truename "./"))))
