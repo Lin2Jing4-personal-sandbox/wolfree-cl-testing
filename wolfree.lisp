@@ -284,7 +284,7 @@
            (lambda ()
              (setf (@ ($ :form) onsubmit) submit)
              (setf
-              (inner-html ($ :button))
+              (inner-html ($ :li>button))
               (who-ps-html
                (:button
                 :onclick (ps-inline
