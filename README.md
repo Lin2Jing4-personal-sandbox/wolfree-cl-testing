@@ -1,26 +1,26 @@
 # Wol[free](https://wolfreealpha.github.io/)Alpha
 
-#### Free Wolfram Alpha Step-by-Step Solutions
+### Free Wolfram Alpha Step-by-Step Solutions
 - [**Try it now**](https://wolfreealpha.github.io/), it's gratis!
 - Unlock FREE access to full [Wolfram|Alpha Step-by-Step Solutions](https://www.wolframalpha.com/examples/pro-features/step-by-step-solutions/).
 - Facilitate the use of [Wolfram|Alpha Show Steps API](https://products.wolframalpha.com/show-steps-api/documentation/).
 
-#### Public instances
+### Public instances
 - https://wolfreealpha.github.io/
 
-#### Building from source
+### Building from source
 1. Install [Portacle](https://portacle.github.io/).
-2. Put `package.lisp`, `wolfree.asd`, and `wolfree.lisp` in the `/portacle/projects/` directory.
-3. Run Portacle.
-4. Type in `(ql:quickload :wolfree)` after `CL-USER>` and hit `⏎ Enter`.
+2. Put [cl-wget.asd](https://github.com/cl-wget/cl-wget/blob/main/cl-wget.asd), [cl-wget.lisp](https://github.com/cl-wget/cl-wget/blob/main/cl-wget.lisp), [wolfree.asd](/), and [wolfree.lisp](/) in the [/portacle/projects/](https://common-lisp.net/project/asdf/asdf.html#Configuring-ASDF) directory.
+3. Run [Portacle](https://portacle.github.io/#use).
+4. Type in [`(ql:quickload :wolfree)`](https://www.quicklisp.org/beta/#basic-commands) after [`CL-USER>`](https://gigamonkeys.com/book/programming-in-the-large-packages-and-symbols.html#three-standard-packages) and hit [`⏎ Enter`](https://en.wikipedia.org/wiki/Enter_key).
 5. Browse http://localhost:8080/.
 
-#### Contributing
+### Contributing
 - Start a [discussion](https://docs.github.com/en/discussions/collaborating-with-your-community-using-discussions/collaborating-with-maintainers-using-discussions) to ask questions and collaborate with maintainers.
 - Create an [issue](https://docs.github.com/en/github/managing-your-work-on-github/creating-an-issue) to request new features or report bugs.
 - Open a [pull request](https://docs.github.com/en/github/collaborating-with-issues-and-pull-requests/proposing-changes-to-your-work-with-pull-requests) to submit a patch.
 
-#### License
+### License
 AGPL-3.0-or-later
 ```
     Wolfree gives everyone free access to Wolfram|Alpha Pro.
