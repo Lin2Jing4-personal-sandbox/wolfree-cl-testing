@@ -30,9 +30,7 @@
 
 (named-readtables:in-readtable :interpol-syntax)
 
-(eval-when (:compile-toplevel
-            :load-toplevel
-            :execute)
+(eval-when (:compile-toplevel :load-toplevel :execute)
   (setq *attribute-quote-char* #\")
   (setq *js-inline-string-delimiter* #\')
   (setf (html-mode) :html5))
@@ -84,10 +82,7 @@
        (str
         (ps
           (defun $ (selector)
-            (chain
-             iframe
-             content-document
-             (query-selector selector)))
+            ((@ iframe content-document query-selector) selector))
           (defmacro wait-until-exist (selector &body body)
             (with-ps-gensyms (function-name)
               `(progn
@@ -103,80 +98,64 @@
              (setf
               (inner-html ($ "._2oVR5"))
               (who-ps-html (:section :class "_2GT4c")))
-             (defmacro attach (html)
-               `(setf
-                 (inner-html ($ "._2GT4c"))
-                 (+
-                  (inner-html ($ "._2GT4c"))
-                  (who-ps-html ,html))))
-             (chain
-              json
-              queryresult
-              pods
-              (for-each
-               (lambda (pod)
-                 (attach
-                  (:header
-                   :class "_124pH"
-                   (:h2 :class "pxQx2" (@ pod title))))
-                 (when (@ pod states)
-                   (chain
-                    pod
-                    states
-                    (for-each
-                     (lambda (state)
-                       (when (@ state states)
-                         (attach
-                          (:select
-                           :style (lisp
-                                   (inline-css
-                                    '(:margin "1em"
-                                      :color "orangered"
-                                      :background "white"
-                                      :border-radius "4px"
-                                      :border "thin solid darkorange")))
-                           :onchange (lisp
-                                      (ps
-                                        (chain
-                                         parent
-                                         (submit
-                                          (chain
-                                           this
-                                           value
-                                           (replace-all #\Space :+))))
-                                        (chain
-                                         this
-                                         previous-element-sibling
-                                         class-list
-                                         (add "_21h4q" "_1GgzZ" "_3f1Mz"))))
-                           (:option (@ state value))
-                           (chain
-                            state
-                            states
-                            (map
-                             (lambda (state)
-                               (who-ps-html (:option (@ state name)))))
-                            (join)))))))))
-                 (chain
-                  pod
-                  subpods
-                  (for-each
-                   (lambda (subpod)
-                     (attach
-                      (:div
-                       :class "Y4YRs"
-                       (:div
-                        :class "_8J16o"
-                        (:img :src (chain subpod img src))
-                        (:details
-                         (:summary :class "_3lk7l")
-                         (:pre (@ subpod plaintext))))))))))))))
+             (defmacro attach (&rest html)
+               `((@ ($ "._2GT4c") "insertAdjacentHTML")
+                 :BeforeEnd
+                 (who-ps-html ,@html)))
+             ((@ json queryresult pods for-each)
+              (lambda (pod)
+                (attach
+                 (:header
+                  :class "_124pH"
+                  (:h2 :class "pxQx2" (@ pod title))))
+                (when (@ pod states)
+                  ((@ pod states for-each)
+                   (lambda (state)
+                     (when (@ state states)
+                       (attach
+                        (:select
+                         :style (lisp
+                                 (inline-css
+                                  '(:margin "1em"
+                                    :color "orangered"
+                                    :background "white"
+                                    :border-radius "4px"
+                                    :border "thin solid darkorange")))
+                         :onchange (lisp
+                                    (ps
+                                      ((@ parent submit)
+                                       ((@ this value replace-all) #\Space :+))
+                                      ((@
+                                        this
+                                        previous-element-sibling
+                                        class-list
+                                        add)
+                                       "_21h4q"
+                                       "_1GgzZ"
+                                       "_3f1Mz")))
+                         (:option (@ state value))
+                         (chain
+                          ((@ state states map)
+                           (lambda (state)
+                             (who-ps-html (:option (@ state name)))))
+                          (join))))))))
+                ((@ pod subpods for-each)
+                 (lambda (subpod)
+                   (attach
+                    (:div
+                     :class "Y4YRs"
+                     (:div
+                      :class "_8J16o"
+                      (:img :src (chain subpod img src))
+                      (:details
+                       (:summary :class "_3lk7l")
+                       (:pre (@ subpod plaintext))))))))))))
           (fetch
            (setf
             cors-proxy
             (+
              "https://lin2jing4-cors-"
-             (new (chain (*date) (get-day)))
+             (new ((@ (*date) get-day)))
              ".herokuapp.com/")))
           (defun submit (podstate)
             (setf
@@ -266,16 +245,11 @@
                            "ArcCoth")
                          (reduce
                           (lambda (input built-in-symbol)
-                            (chain
-                             input
-                             (replace-all
-                              (+ built-in-symbol "%5B")
-                              (+ #\Space built-in-symbol "%5B"))))
+                            ((@ input replace-all)
+                             (+ built-in-symbol "%5B")
+                             (+ #\Space built-in-symbol "%5B")))
                           (chain
-                           iframe
-                           content-window
-                           location
-                           search
+                           (@ iframe content-window location search)
                            (replace (regex ".*i=") "")
                            (replace-all "%E2%85%87" :e))))))
              (then (lambda (response) (chain response (json))))
@@ -288,10 +262,8 @@
               (who-ps-html
                (:button
                 :onclick (ps-inline
-                             (chain
-                              parent
-                              location
-                              (replace "https://github.com/WolfreeAlpha")))
+                             ((@ parent location replace)
+                              "https://github.com/WolfreeAlpha"))
                 :class "_10um4 VC3Co _34x1u"
                 "Source")
                "Get FREE access to Wolfram|Alpha PRO."
@@ -300,4 +272,4 @@
            999)
           (wait-until-exist
            "._2oVR5 ._2cS1C"
-           (chain ($ "._2oVR5 ._2cS1C") (remove))))))))))
+           ((@ ($ "._2oVR5 ._2cS1C") remove))))))))))
