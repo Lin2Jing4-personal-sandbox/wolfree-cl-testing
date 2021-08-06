@@ -268,7 +268,13 @@
                 "Source")
                "Get FREE access to Wolfram|Alpha PRO."
                (:br)
-               "Unlock step-by-step solution for everyone.")))
+               "Unlock step-by-step solution for everyone."))
+             (setf (inner-html ($ :p)) "Report a problem to Wolfree »")
+             (setf
+              (@ ($ "._28OPL") onclick)
+              (lambda ()
+                ((@ parent location replace)
+                 "https://gitreports.com/issue/git-reports/wolfree"))))
            999)
           (wait-until-exist
            "._2oVR5 ._2cS1C"
